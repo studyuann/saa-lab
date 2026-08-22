@@ -16,4 +16,4 @@ echo  - PC Browser   : http://localhost:5000
 echo  - Mobile Wi-Fi : Check console on app.py (e.g. http://172.30.1.3:5000)
 echo  - To Stop      : Run stop_server.bat
 echo ========================================================
-timeout /t 4 >nul
+ping 127.0.0.1 -n 4 >nul

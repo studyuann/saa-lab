@@ -13,4 +13,4 @@ for /f "tokens=5" %%a in ('netstat -aon ^| findstr :5000') do (
 echo.
 echo  [OK] Server on port 5000 has been stopped successfully.
 echo ========================================================
-timeout /t 2 >nul
+ping 127.0.0.1 -n 3 >nul

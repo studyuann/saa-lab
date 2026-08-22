@@ -8,21 +8,37 @@ import json
 import os
 import sys
 
-# Windows 콘솔 UTF-8 출력 보장
-if sys.platform == "win32":
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
-
 PORT = 5000
 DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 PROGRESS_FILE = os.path.join(DIRECTORY, "user_progress.json")
+LOG_FILE = os.path.join(DIRECTORY, "server.log")
+
+# pythonw (백그라운드/GUI) 실행 시 stdout/stderr가 None이므로 파일로 안전하게 리다이렉트
+if sys.stdout is None or sys.stderr is None:
+    try:
+        log_stream = open(LOG_FILE, "a", encoding="utf-8", buffering=1)
+        sys.stdout = log_stream
+        sys.stderr = log_stream
+    except Exception:
+        pass
+else:
+    if sys.platform == "win32":
+        try:
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+            sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=DIRECTORY, **kwargs)
         
     def log_message(self, format, *args):
-        sys.stderr.write(f"[{self.log_date_time_string()}] {format % args}\n")
+        try:
+            if sys.stderr is not None:
+                sys.stderr.write(f"[{self.log_date_time_string()}] {format % args}\n")
+        except Exception:
+            pass
 
     def do_GET(self):
         # 서버 파일 기반 진행상황 API

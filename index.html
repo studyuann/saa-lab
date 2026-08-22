@@ -1607,6 +1607,21 @@
       alert("✅ 모든 풀이 기록이 초기화되었으며, 1번 문제로 돌아왔습니다.");
     }
 
+    function getShuffledChoiceKeys(qId, keys) {
+      const arr = [...keys];
+      let seed = (qId * 9301 + 49297) % 233280;
+      for (let i = arr.length - 1; i > 0; i--) {
+        seed = (seed * 9301 + 49297) % 233280;
+        const j = Math.floor((seed / 233280) * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      // If shuffle accidentally stayed in same order, swap first two to guarantee shuffle
+      if (arr.every((k, idx) => k === keys[idx]) && arr.length > 1) {
+        [arr[0], arr[1]] = [arr[1], arr[0]];
+      }
+      return arr;
+    }
+
     // Question Rendering
     function renderCurrentQuestion() {
       if (filteredQuestions.length === 0) return;
@@ -1645,7 +1660,7 @@
       }
       document.getElementById('questionText').innerHTML = displayQText;
 
-      // Choices
+      // Choices List
       const choicesList = document.getElementById('choicesList');
       choicesList.innerHTML = '';
 
@@ -1653,6 +1668,11 @@
       const isAnswered = userAnswer !== undefined;
 
       let choiceKeys = ['A', 'B', 'C', 'D', 'E'].filter(k => q.choices && q.choices[k]);
+      
+      // Apply Shuffle if active
+      if (isShuffle) {
+        choiceKeys = getShuffledChoiceKeys(q.id, choiceKeys);
+      }
       
       choiceKeys.forEach(letter => {
         const item = document.createElement('div');
@@ -1903,13 +1923,22 @@
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
         
         const key = e.key.toUpperCase();
-        if (['1', 'A'].includes(key)) selectChoice('A');
-        if (['2', 'B'].includes(key) && key !== 'B') selectChoice('B');
+        if (['1', '2', '3', '4', '5'].includes(key)) {
+          const idx = parseInt(key, 10) - 1;
+          const q = filteredQuestions[currentIndex];
+          if (!q) return;
+          let keys = ['A', 'B', 'C', 'D', 'E'].filter(k => q.choices && q.choices[k]);
+          if (isShuffle) keys = getShuffledChoiceKeys(q.id, keys);
+          if (idx < keys.length) selectChoice(keys[idx]);
+          return;
+        }
+
+        if (key === 'A') selectChoice('A');
         if (key === 'B') toggleCurrentBookmark();
-        if (key === 'N') toggleNoteBox();
-        if (['3', 'C'].includes(key)) selectChoice('C');
-        if (['4', 'D'].includes(key)) selectChoice('D');
+        if (key === 'C') selectChoice('C');
+        if (key === 'D') selectChoice('D');
         if (key === 'E') toggleExplanationManual();
+        if (key === 'N') toggleNoteBox();
         if (e.code === 'Space' || e.key === 'ArrowRight') {
           e.preventDefault();
           navigateQuestion(1);

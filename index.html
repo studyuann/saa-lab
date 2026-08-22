@@ -148,11 +148,11 @@
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      padding: 0.25rem 0.55rem;
-      gap: 0.4rem;
-      min-width: 140px;
+      padding: 2px 4px 2px 8px;
+      gap: 0.3rem;
+      min-width: 170px;
       flex: 1;
-      max-width: 220px;
+      max-width: 260px;
     }
 
     .header-search input {
@@ -166,6 +166,28 @@
 
     .header-search input::placeholder {
       color: var(--text-dim);
+    }
+
+    .btn-search-trigger {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: var(--accent-blue);
+      border-radius: 6px;
+      padding: 0.22rem 0.5rem;
+      font-size: 0.76rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .btn-search-trigger:hover {
+      background: var(--accent-blue);
+      color: #0b0f19;
+      border-color: var(--accent-blue);
     }
 
     .header-controls {
@@ -969,10 +991,10 @@
         <span class="brand-title">Interactive Master</span>
       </div>
 
-      <!-- Keyword & Number Search -->
+      <!-- Keyword & Number Search with Clickable Button -->
       <div class="header-search">
-        <span>🔍</span>
-        <input type="text" id="searchInput" placeholder="문항 번호 (예: 150) 또는 검색어..." onkeyup="handleSearchInput(event)">
+        <input type="text" id="searchInput" placeholder="문항 번호 (예: 150) 또는 키워드..." onkeyup="handleSearchInput(event)">
+        <button class="btn-search-trigger" onclick="executeSearch()" title="검색 실행">🔍 <span>검색</span></button>
       </div>
 
       <!-- Settings, Tools & Modes (All in Top Row) -->
@@ -1510,39 +1532,79 @@
       updateDashboardStats();
     }
 
-    // Search Bar
-    function handleSearchInput(e) {
-      const val = document.getElementById('searchInput').value.trim();
-      if (e.key === 'Enter' && val) {
-        const num = parseInt(val.replace(/[^\d]/g, ''), 10);
-        if (num && num >= 1 && num <= allQuestions.length) {
-          applyFilter('ALL');
-          const targetIdx = filteredQuestions.findIndex(q => q.number === num);
-          if (targetIdx !== -1) {
-            currentIndex = targetIdx;
-            renderCurrentQuestion();
-            document.getElementById('searchInput').blur();
-            return;
-          }
-        }
+    // Search Functions
+    function executeSearch() {
+      const inputEl = document.getElementById('searchInput');
+      const val = inputEl ? inputEl.value.trim() : '';
+      if (!val) {
+        applyFilter('ALL');
+        return;
+      }
 
-        const kw = val.toLowerCase();
-        const searchMatches = allQuestions.filter(q => 
-          q.question.toLowerCase().includes(kw) || 
-          (q.explanation && q.explanation.toLowerCase().includes(kw)) ||
-          Object.values(q.choices).some(c => c.toLowerCase().includes(kw))
-        );
-
-        if (searchMatches.length > 0) {
-          filteredQuestions = searchMatches;
-          currentTag = `검색: "${val}"`;
-          currentIndex = 0;
+      const num = parseInt(val.replace(/[^\d]/g, ''), 10);
+      if (num && num >= 1 && num <= allQuestions.length) {
+        applyFilter('ALL');
+        const targetIdx = filteredQuestions.findIndex(q => q.number === num);
+        if (targetIdx !== -1) {
+          currentIndex = targetIdx;
           renderCurrentQuestion();
-          updateDashboardStats();
-        } else {
-          alert(`"${val}"에 해당하는 문항을 찾지 못했습니다.`);
+          if (inputEl) inputEl.blur();
+          return;
         }
       }
+
+      const kw = val.toLowerCase();
+      const searchMatches = allQuestions.filter(q => 
+        q.question.toLowerCase().includes(kw) || 
+        (q.explanation && q.explanation.toLowerCase().includes(kw)) ||
+        Object.values(q.choices).some(c => c.toLowerCase().includes(kw))
+      );
+
+      if (searchMatches.length > 0) {
+        filteredQuestions = searchMatches;
+        currentTag = `검색: "${val}"`;
+        currentIndex = 0;
+        renderCurrentQuestion();
+        updateDashboardStats();
+      } else {
+        alert(`"${val}"에 해당하는 문항을 찾지 못했습니다.`);
+      }
+    }
+
+    function handleSearchInput(e) {
+      if (e.key === 'Enter') {
+        executeSearch();
+      }
+    }
+
+    // Reset All Progress Function
+    function confirmResetProgress() {
+      const isConfirmed = confirm(
+        "⚠️ 모든 문제 풀이 기록을 초기화하시겠습니까?\n\n" +
+        "• 내가 푼 답안 및 채점 기록이 삭제됩니다.\n" +
+        "• 1번 문제(초기 시작 상태)로 이동합니다.\n\n" +
+        "(※ 북마크, 작성하신 나만의 메모, 다크모드/글자크기 설정은 안전하게 보존됩니다)"
+      );
+
+      if (!isConfirmed) return;
+
+      userAnswers = {};
+      flags.clear();
+      isMockExam = false;
+      if (mockExamTimer) clearInterval(mockExamTimer);
+      document.getElementById('examTimerBadge').classList.remove('show');
+
+      const searchEl = document.getElementById('searchInput');
+      if (searchEl) searchEl.value = '';
+
+      applyFilter('ALL');
+      currentIndex = 0;
+      
+      saveState();
+      renderCurrentQuestion();
+      updateDashboardStats();
+
+      alert("✅ 모든 풀이 기록이 초기화되었으며, 1번 문제로 돌아왔습니다.");
     }
 
     // Question Rendering

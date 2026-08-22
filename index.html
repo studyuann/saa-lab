@@ -1660,39 +1660,41 @@
       }
       document.getElementById('questionText').innerHTML = displayQText;
 
-      // Choices List
+      // Choices List (Fixed A, B, C, D visual slots with shuffled content mapping)
       const choicesList = document.getElementById('choicesList');
       choicesList.innerHTML = '';
 
       const userAnswer = userAnswers[q.id];
       const isAnswered = userAnswer !== undefined;
 
-      let choiceKeys = ['A', 'B', 'C', 'D', 'E'].filter(k => q.choices && q.choices[k]);
+      const originalKeys = ['A', 'B', 'C', 'D', 'E'].filter(k => q.choices && q.choices[k]);
       
-      // Apply Shuffle if active
+      // Determine which original choice key goes to which display slot
+      let displayOrder = [...originalKeys];
       if (isShuffle) {
-        choiceKeys = getShuffledChoiceKeys(q.id, choiceKeys);
+        displayOrder = getShuffledChoiceKeys(q.id, originalKeys);
       }
       
-      choiceKeys.forEach(letter => {
+      displayOrder.forEach((originalKey, slotIdx) => {
+        const slotLetter = originalKeys[slotIdx]; // Fixed A, B, C, D display badge
         const item = document.createElement('div');
         item.className = 'choice-item';
         
-        if (userAnswer === letter) {
+        if (userAnswer === originalKey) {
           item.classList.add('selected');
         }
 
         if (currentMode === 'practice' && isAnswered) {
-          if (q.answer.includes(letter)) {
+          if (q.answer.includes(originalKey)) {
             item.classList.add('correct');
-          } else if (userAnswer === letter && !q.answer.includes(letter)) {
+          } else if (userAnswer === originalKey && !q.answer.includes(originalKey)) {
             item.classList.add('wrong');
           }
         }
 
-        item.onclick = () => selectChoice(letter);
+        item.onclick = () => selectChoice(originalKey);
         
-        let choiceText = q.choices[letter];
+        let choiceText = q.choices[originalKey];
         if (isKwHighlight) {
           EXAM_KEYWORDS.forEach(kw => {
             const regex = new RegExp(`(${kw})`, 'gi');
@@ -1701,7 +1703,7 @@
         }
 
         item.innerHTML = `
-          <div class="choice-letter">${letter}</div>
+          <div class="choice-letter">${slotLetter}</div>
           <div class="choice-text">${choiceText}</div>
         `;
         choicesList.appendChild(item);
@@ -1923,20 +1925,28 @@
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
         
         const key = e.key.toUpperCase();
+        const q = filteredQuestions[currentIndex];
+        if (!q) return;
+
+        const originalKeys = ['A', 'B', 'C', 'D', 'E'].filter(k => q.choices && q.choices[k]);
+        let displayOrder = [...originalKeys];
+        if (isShuffle) {
+          displayOrder = getShuffledChoiceKeys(q.id, originalKeys);
+        }
+
+        // Numeric keys 1~5 select slots 1~5 on screen
         if (['1', '2', '3', '4', '5'].includes(key)) {
           const idx = parseInt(key, 10) - 1;
-          const q = filteredQuestions[currentIndex];
-          if (!q) return;
-          let keys = ['A', 'B', 'C', 'D', 'E'].filter(k => q.choices && q.choices[k]);
-          if (isShuffle) keys = getShuffledChoiceKeys(q.id, keys);
-          if (idx < keys.length) selectChoice(keys[idx]);
+          if (idx < displayOrder.length) selectChoice(displayOrder[idx]);
           return;
         }
 
-        if (key === 'A') selectChoice('A');
+        // Letter keys A, C, D select visual slots A, C, D (B is reserved for Bookmark)
+        if (key === 'A' && displayOrder.length >= 1) { selectChoice(displayOrder[0]); return; }
+        if (key === 'C' && displayOrder.length >= 3) { selectChoice(displayOrder[2]); return; }
+        if (key === 'D' && displayOrder.length >= 4) { selectChoice(displayOrder[3]); return; }
+
         if (key === 'B') toggleCurrentBookmark();
-        if (key === 'C') selectChoice('C');
-        if (key === 'D') selectChoice('D');
         if (key === 'E') toggleExplanationManual();
         if (key === 'N') toggleNoteBox();
         if (e.code === 'Space' || e.key === 'ArrowRight') {

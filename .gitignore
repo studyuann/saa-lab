@@ -1,0 +1,16 @@
+# Python / Environment
+__pycache__/
+*.pyc
+*.lnk
+
+# Temporary extraction files
+sample_pages.txt
+demo_10_questions.json
+extract_demo.py
+format_demo.py
+parse_demo.py
+generate_quiz_data.py
+get_target.ps1
+
+# User progress (optional: can be tracked or ignored, keep tracked by default or template)
+# user_progress.json

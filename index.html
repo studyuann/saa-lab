@@ -264,14 +264,26 @@
       padding: 0 1rem;
     }
 
-    /* Clean Top Dashboard Bar (NO Horizontal Scrollbar!) */
+    /* Clean Top Dashboard Bar (Structured 2 Rows) */
     .dashboard-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      margin-bottom: 1rem;
+    }
+
+    .dashboard-top-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
       gap: 0.75rem;
       flex-wrap: wrap;
+    }
+
+    .main-action-buttons {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     .primary-filters {
@@ -1042,6 +1054,25 @@
         margin-bottom: 0.6rem;
       }
 
+      .dashboard-top-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.45rem;
+      }
+
+      .main-action-buttons {
+        width: 100%;
+        display: flex;
+        gap: 0.4rem;
+      }
+
+      .main-action-buttons .btn-action-main {
+        flex: 1;
+        justify-content: center;
+        padding: 0.45rem 0.5rem;
+        font-size: 0.82rem;
+      }
+
       .primary-filters {
         overflow-x: auto;
         flex-wrap: nowrap;
@@ -1229,20 +1260,36 @@
 
   <!-- Main Content -->
   <main>
-    <!-- Subheader / Action & Filter Bar (Second Row) -->
+    <!-- Subheader / Action & Filter Bar (Structured 2-Tier Rows) -->
     <div class="dashboard-bar">
+      <!-- Tier 1: Main Action Buttons (Navigator & Mock Exam) + Stats -->
+      <div class="dashboard-top-row">
+        <div class="main-action-buttons">
+          <button class="tag-chip btn-action-main" onclick="openNavGrid()" title="전체 725문항 바둑판 네비게이터">
+            🗺️ <strong>문항목록 (725)</strong>
+          </button>
+          <button class="tag-chip btn-action-main" id="btnExamSim" onclick="startMockExam()" title="65문항 실전 모의고사 (130분)">
+            🎯 <strong>모의고사 (65)</strong>
+          </button>
+        </div>
+
+        <div class="stats-badge">
+          <div class="sync-badge" title="서버 파일(user_progress.json)에 실시간 자동 저장되어 모든 브라우저에서 동기화됩니다">
+            <span>☁️ 모든 브라우저 동기화됨</span>
+          </div>
+          <div class="stat-item">
+            <span>진행:</span>
+            <strong id="progressIndicator">1 / 725</strong>
+          </div>
+          <div class="stat-item">
+            <span>정답률:</span>
+            <strong id="accuracyIndicator">0%</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tier 2: Filter Chips (Positioned Cleanly Underneath Actions) -->
       <div class="primary-filters">
-        <!-- Main Actions: Navigator & Mock Exam -->
-        <button class="tag-chip btn-action-main" onclick="openNavGrid()" title="전체 725문항 바둑판 네비게이터">
-          🗺️ <strong>문항목록 (725)</strong>
-        </button>
-        <button class="tag-chip btn-action-main" id="btnExamSim" onclick="startMockExam()" title="65문항 실전 모의고사 (130분)">
-          🎯 <strong>모의고사 (65)</strong>
-        </button>
-
-        <span style="color: var(--border-color); font-size: 1.1rem; margin: 0 2px;">|</span>
-
-        <!-- Filter Chips -->
         <button class="tag-chip active" id="btnFilterAll" onclick="applyFilter('ALL')">전체 (725)</button>
         <button class="tag-chip" id="btnFilterBookmarks" onclick="applyFilter('BOOKMARKS')">⭐ 북마크</button>
         <button class="tag-chip" id="btnFilterWrong" onclick="applyFilter('WRONG')">❌ 오답노트</button>
@@ -1252,20 +1299,6 @@
         <button class="tag-chip btn-topic-selector" id="btnTopicSelector" onclick="openTopicModal()">
           🏷️ <span id="topicSelectorLabel">주제별 태그 선택 ▼</span>
         </button>
-      </div>
-
-      <div class="stats-badge">
-        <div class="sync-badge" title="서버 파일(user_progress.json)에 실시간 자동 저장되어 모든 브라우저에서 동기화됩니다">
-          <span>☁️ 모든 브라우저 동기화됨</span>
-        </div>
-        <div class="stat-item">
-          <span>진행:</span>
-          <strong id="progressIndicator">1 / 725</strong>
-        </div>
-        <div class="stat-item">
-          <span>정답률:</span>
-          <strong id="accuracyIndicator">0%</strong>
-        </div>
       </div>
     </div>
 

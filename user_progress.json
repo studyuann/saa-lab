@@ -1,22 +1,26 @@
 {
   "answers": {
-    "1": "C",
+    "1": "A",
     "2": "C",
-    "3": "B",
-    "4": "B",
+    "3": "D",
     "5": "C",
-    "82": "A"
+    "7": "D",
+    "8": "D",
+    "9": "B",
+    "10": "C",
+    "11": "A",
+    "12": "D",
+    "13": "D",
+    "14": "B"
   },
   "notes": {},
-  "bookmarks": [
-    1
-  ],
+  "bookmarks": [],
   "mode": "practice",
   "tag": "ALL",
   "lastIndex": 0,
   "theme": "dark",
   "fontSize": "md",
   "kwHighlight": true,
-  "shuffle": false,
-  "updatedAt": "2026-08-22T11:46:31.517Z"
+  "shuffle": true,
+  "updatedAt": "2026-08-22T13:02:40.066Z"
 }

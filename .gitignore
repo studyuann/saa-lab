@@ -12,5 +12,6 @@ parse_demo.py
 generate_quiz_data.py
 get_target.ps1
 
-# User progress (optional: can be tracked or ignored, keep tracked by default or template)
-# user_progress.json
+# Logs
+server.log
+*.log

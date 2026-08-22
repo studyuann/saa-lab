@@ -1,5 +1,6 @@
 import http.server
 import socketserver
+import socket
 import webbrowser
 import threading
 import time
@@ -68,6 +69,17 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         self.send_response(404)
         self.end_headers()
 
+def get_local_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(('8.8.8.8', 80))
+        ip = s.getsockname()[0]
+    except Exception:
+        ip = "127.0.0.1"
+    finally:
+        s.close()
+    return ip
+
 def open_browser_delayed(url):
     time.sleep(0.8)
     webbrowser.open(url)
@@ -75,18 +87,24 @@ def open_browser_delayed(url):
 def run_server():
     os.chdir(DIRECTORY)
     socketserver.TCPServer.allow_reuse_address = True
-    url = f"http://localhost:{PORT}"
+    local_url = f"http://localhost:{PORT}"
+    wifi_ip = get_local_ip()
+    wifi_url = f"http://{wifi_ip}:{PORT}"
     
     # 서버 실행 시 브라우저 자동 오픈 (백그라운드 스레드)
-    threading.Thread(target=open_browser_delayed, args=(url,), daemon=True).start()
+    threading.Thread(target=open_browser_delayed, args=(local_url,), daemon=True).start()
     
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
-        print("=" * 60)
-        print("🚀 AWS SAA-C03 Interactive Quiz Server is running!")
-        print(f"👉 브라우저 주소: {url}")
-        print(f"📁 풀이 데이터 저장소: user_progress.json (모든 브라우저/기기 공유)")
-        print("👉 종료하려면 이 창에서 Ctrl + C 를 누르세요.")
-        print("=" * 60)
+        print("=" * 65)
+        print("🚀 AWS SAA-C03 Interactive Master Web Server")
+        print("=" * 65)
+        print(f"💻 [이 PC에서 접속]       : {local_url}")
+        print(f"📱 [스마트폰/태블릿 Wi-Fi] : {wifi_url}")
+        print(f"📁 [진행상황 저장소]       : user_progress.json (실시간 영구 동기화)")
+        print("-" * 65)
+        print("💡 동일한 Wi-Fi에 연결된 스마트폰이나 태블릿에서 위 📱 주소로 접속하세요!")
+        print("👉 서버를 종료하려면 이 창에서 Ctrl + C 를 누르세요.")
+        print("=" * 65)
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:

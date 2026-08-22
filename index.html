@@ -1412,13 +1412,6 @@
       renderCurrentQuestion();
     }
 
-    function toggleShuffle() {
-      isShuffle = !isShuffle;
-      document.getElementById('btnShuffle').classList.toggle('active', isShuffle);
-      saveState();
-      renderCurrentQuestion();
-    }
-
     // Categorized Topic Modal Builder
     function renderTopicModalContent() {
       const tagCountMap = {};
@@ -1607,19 +1600,39 @@
       alert("✅ 모든 풀이 기록이 초기화되었으며, 1번 문제로 돌아왔습니다.");
     }
 
-    function getShuffledChoiceKeys(qId, keys) {
+    let shuffleMap = {}; // Dynamic session shuffle map: { qId: ['C', 'A', 'D', 'B'] }
+
+    function getRandomShuffle(keys) {
       const arr = [...keys];
-      let seed = (qId * 9301 + 49297) % 233280;
       for (let i = arr.length - 1; i > 0; i--) {
-        seed = (seed * 9301 + 49297) % 233280;
-        const j = Math.floor((seed / 233280) * (i + 1));
+        const j = Math.floor(Math.random() * (i + 1));
         [arr[i], arr[j]] = [arr[j], arr[i]];
       }
-      // If shuffle accidentally stayed in same order, swap first two to guarantee shuffle
-      if (arr.every((k, idx) => k === keys[idx]) && arr.length > 1) {
-        [arr[0], arr[1]] = [arr[1], arr[0]];
+      // Guarantee that the order has actually changed from the original
+      if (arr.length > 1 && arr.every((k, idx) => k === keys[idx])) {
+        const r1 = Math.floor(Math.random() * arr.length);
+        const r2 = (r1 + 1 + Math.floor(Math.random() * (arr.length - 1))) % arr.length;
+        [arr[r1], arr[r2]] = [arr[r2], arr[r1]];
       }
       return arr;
+    }
+
+    function getShuffledChoiceKeys(qId, keys) {
+      if (!shuffleMap[qId]) {
+        shuffleMap[qId] = getRandomShuffle(keys);
+      }
+      return shuffleMap[qId];
+    }
+
+    function toggleShuffle() {
+      isShuffle = !isShuffle;
+      if (isShuffle) {
+        // Clear previous session map to generate brand new random permutations every time
+        shuffleMap = {};
+      }
+      document.getElementById('btnShuffle').classList.toggle('active', isShuffle);
+      saveState();
+      renderCurrentQuestion();
     }
 
     // Question Rendering

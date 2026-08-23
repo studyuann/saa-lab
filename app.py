@@ -8,7 +8,7 @@ import json
 import os
 import sys
 
-PORT = 5000
+PORT = int(os.environ.get("PORT", 5000))
 DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 PROGRESS_FILE = os.path.join(DIRECTORY, "user_progress.json")
 LOG_FILE = os.path.join(DIRECTORY, "server.log")
@@ -107,8 +107,9 @@ def run_server():
     wifi_ip = get_local_ip()
     wifi_url = f"http://{wifi_ip}:{PORT}"
     
-    # 서버 실행 시 브라우저 자동 오픈 (백그라운드 스레드)
-    threading.Thread(target=open_browser_delayed, args=(local_url,), daemon=True).start()
+    # 로컬 PC 실행 시에만 브라우저 자동 오픈 (클라우드 환경 제외)
+    if "RENDER" not in os.environ and "PORT" not in os.environ:
+        threading.Thread(target=open_browser_delayed, args=(local_url,), daemon=True).start()
     
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
         print("=" * 65)

@@ -6,10 +6,6 @@ __pycache__/
 # Temporary extraction files
 sample_pages.txt
 demo_10_questions.json
-extract_demo.py
-format_demo.py
-parse_demo.py
-generate_quiz_data.py
 get_target.ps1
 
 # Logs

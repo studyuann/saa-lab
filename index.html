@@ -1205,9 +1205,14 @@
   <!-- Header (Top Row: Brand + Search + Settings/Tools in Single Line) -->
   <header>
     <div class="header-container">
-      <div class="brand" onclick="applyFilter('ALL')">
-        <span class="logo-badge">AWS SAA-C03</span>
-        <span class="brand-title">Interactive Master</span>
+      <div class="brand">
+        <a href="/" style="text-decoration:none; display:inline-flex; align-items:center; margin-right:4px;" title="ya100.shop 메인 홈으로 이동">
+          <span style="background: var(--bg-card); border:1px solid var(--border-color); color:var(--text-main); font-size:0.75rem; font-weight:700; padding:0.22rem 0.5rem; border-radius:6px;">🏠 홈</span>
+        </a>
+        <div onclick="applyFilter('ALL')" style="display:inline-flex; align-items:center; gap:0.5rem; cursor:pointer;">
+          <span class="logo-badge">AWS SAA-C03</span>
+          <span class="brand-title">Interactive Master</span>
+        </div>
       </div>
 
       <!-- Keyword & Number Search with Clickable Button -->

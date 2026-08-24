@@ -41,8 +41,28 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             pass
 
     def do_GET(self):
-        # 서버 파일 기반 진행상황 API
-        if self.path == "/api/progress":
+        clean_path = self.path.split("?")[0]
+        
+        # 1. 루트 경로 (ya100.shop/) -> 메인 포트폴리오/발명 허브 (home.html)
+        if clean_path in ["/", "/index.html", "/home.html"]:
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.end_headers()
+            with open(os.path.join(DIRECTORY, "home.html"), "rb") as f:
+                self.wfile.write(f.read())
+            return
+
+        # 2. 서브패스 경로 (ya100.shop/saa) -> AWS SAA 퀴즈 랩 (index.html)
+        if clean_path in ["/saa", "/saa/", "/saa/index.html"]:
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.end_headers()
+            with open(os.path.join(DIRECTORY, "index.html"), "rb") as f:
+                self.wfile.write(f.read())
+            return
+
+        # 3. 진행상황 API (/api/progress 및 /saa/api/progress)
+        if clean_path in ["/api/progress", "/saa/api/progress"]:
             self.send_response(200)
             self.send_header("Content-Type", "application/json; charset=utf-8")
             self.send_header("Cache-Control", "no-store, no-cache, must-revalidate")
@@ -58,12 +78,22 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 data = "{}"
             self.wfile.write(data.encode("utf-8"))
             return
-        
+
+        # 4. 퀴즈 데이터 파일 경로 대응
+        if clean_path == "/saa/quiz_data.json":
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.end_headers()
+            with open(os.path.join(DIRECTORY, "quiz_data.json"), "rb") as f:
+                self.wfile.write(f.read())
+            return
+
         super().do_GET()
 
     def do_POST(self):
+        clean_path = self.path.split("?")[0]
         # 서버 파일에 진행상황 실시간 저장 API
-        if self.path == "/api/progress":
+        if clean_path in ["/api/progress", "/saa/api/progress"]:
             content_length = int(self.headers.get("Content-Length", 0))
             body = self.rfile.read(content_length).decode("utf-8")
             try:

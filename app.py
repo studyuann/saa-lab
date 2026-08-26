@@ -43,17 +43,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         clean_path = self.path.split("?")[0]
         
-        # 1. 루트 경로 (ya100.shop/) -> 메인 포트폴리오/발명 허브 (home.html)
-        if clean_path in ["/", "/index.html", "/home.html"]:
-            self.send_response(200)
-            self.send_header("Content-Type", "text/html; charset=utf-8")
-            self.end_headers()
-            with open(os.path.join(DIRECTORY, "home.html"), "rb") as f:
-                self.wfile.write(f.read())
-            return
-
-        # 2. 서브패스 경로 (ya100.shop/saa) -> AWS SAA 퀴즈 랩 (index.html)
-        if clean_path in ["/saa", "/saa/", "/saa/index.html"]:
+        # SAA 퀴즈 웹앱 서빙 (루트 및 /saa 모두 지원)
+        if clean_path in ["/", "/index.html", "/saa", "/saa/", "/saa/index.html"]:
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.end_headers()

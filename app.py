@@ -132,7 +132,6 @@ def open_browser_delayed(url):
 
 def run_server():
     os.chdir(DIRECTORY)
-    socketserver.TCPServer.allow_reuse_address = True
     local_url = f"http://localhost:{PORT}"
     wifi_ip = get_local_ip()
     wifi_url = f"http://{wifi_ip}:{PORT}"
@@ -141,7 +140,11 @@ def run_server():
     if "RENDER" not in os.environ and "PORT" not in os.environ:
         threading.Thread(target=open_browser_delayed, args=(local_url,), daemon=True).start()
     
-    with socketserver.TCPServer(("", PORT), Handler) as httpd:
+    # 멀티스레드 비동기 HTTP 서버 (다중 탭/모바일 동시 접속 병목 방지)
+    server_class = getattr(http.server, "ThreadingHTTPServer", http.server.HTTPServer)
+    server_class.allow_reuse_address = True
+    
+    with server_class(("", PORT), Handler) as httpd:
         print("=" * 65)
         print("🚀 AWS SAA-C03 Interactive Master Web Server")
         print("=" * 65)

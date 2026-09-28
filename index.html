@@ -1902,6 +1902,14 @@
     ];
 
     async function init() {
+      if (window.location.protocol === 'file:') {
+        const warningBanner = document.createElement('div');
+        warningBanner.style.cssText = "background: #ef4444; color: white; padding: 14px 18px; font-weight: bold; text-align: center; border-radius: 8px; margin-bottom: 15px; font-size: 0.95rem; line-height: 1.5; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);";
+        warningBanner.innerHTML = "⚠️ <strong>현재 file:// 로 열려 있어 브라우저 보안(CORS)으로 인해 문제 데이터와 AI 음성이 동작하지 않습니다.</strong><br>폴더 안의 <strong>run_quiz.bat</strong>을 실행하신 후 <a href='http://localhost:5000' style='color:#fff;text-decoration:underline;margin-left:6px;background:rgba(0,0,0,0.25);padding:3px 10px;border-radius:4px;'>http://localhost:5000</a> 으로 접속해 주세요!";
+        const mainCard = document.querySelector('.main-card') || document.body;
+        mainCard.prepend(warningBanner);
+      }
+
       await loadServerState();
       applyPreferences();
 
@@ -1918,7 +1926,7 @@
         renderCurrentQuestion();
       } catch (err) {
         console.error("Failed to load questions:", err);
-        document.getElementById('questionText').innerText = "quiz_data.json 파일을 불러오지 못했습니다.";
+        document.getElementById('questionText').innerHTML = "<div style='color:var(--wrong-border, #ef4444); font-weight: bold;'>⚠️ quiz_data.json 파일을 불러오지 못했습니다.<br><br>💡 해결 방법: <strong>run_quiz.bat</strong>을 실행한 후 <a href='http://localhost:5000' style='color:var(--accent-blue, #38bdf8); text-decoration: underline;'>http://localhost:5000</a> 으로 접속해 주세요!</div>";
       }
       setupKeyboardShortcuts();
       initTtsEngine();
@@ -2679,10 +2687,10 @@
       { regex: /\bSQL\b/gi, replacement: "에스큐엘" },
       { regex: /\bNoSQL\b/gi, replacement: "노에스큐엘" },
       // [Q 문항 번호 정규식]
-      // 1. 주의: Q* 로 쓰면 '*'가 '0개 이상'을 의미하여 Q가 없는 모든 일반 숫자(500GB, 3개 등)까지 '문제 XX번'으로 치환되는 치명적 버그가 발생합니다.
-      // 2. Q 뒤에 이미 '번'이 붙어 있는 경우(Q1번, Q001번) '문제 001번번'처럼 중복되지 않도록 (?:번)? 처리합니다.
-      // 3. Q1, Q01, Q001 모두 parseInt 후 3자리(001~725) 숫자로 깔끔하게 패딩합니다.
-      { regex: /\bQ\s*(\d+)(?:\s*번)?/gi, replacement: (match, p1) => `문제 ${String(parseInt(p1, 10)).padStart(3, '0')}번` }
+      // 1. Q* 로 쓰면 '*'가 '0개 이상'을 의미하여 Q가 없는 일반 숫자(500GB, 3개 등)까지 치환되는 버그 방지
+      // 2. Q 뒤에 이미 '번'이 붙어 있는 경우(Q1번, Q001번) '문제 1번번'처럼 중복되지 않도록 (?:번)? 처리
+      // 3. TTS 음성에서 '003'이 '영공삼'으로 읽히지 않고 자연스러운 수사(삼 번, 사십 번 등)로 읽히도록 parseInt 정수 사용
+      { regex: /\bQ\s*0*(\d+)(?:\s*번)?/gi, replacement: (match, p1) => `문제 ${parseInt(p1, 10)}번` }
     ];
 
     function normalizeTextForSpeech(text) {
@@ -2855,7 +2863,20 @@
     }
 
     function speakSequence(segments, onAllComplete) {
-      ttsStop(false);
+      if (podcastTimer) {
+        clearInterval(podcastTimer);
+        podcastTimer = null;
+      }
+      if (ttsAudioPlayer) {
+        ttsAudioPlayer.pause();
+        ttsAudioPlayer.currentTime = 0;
+      }
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      if (ttsState === 'IDLE') {
+        ttsState = 'PLAYING';
+      }
 
       const isEdgeTts = selectedVoiceURI.startsWith('edge:') || !selectedVoiceURI;
       const edgeVoiceName = isEdgeTts ? (selectedVoiceURI.replace('edge:', '') || 'ko-KR-SunHiNeural') : null;
@@ -2925,7 +2946,10 @@
     }
 
     function ttsPlayQuestion(onFinish = null) {
-      if (filteredQuestions.length === 0) return;
+      if (!filteredQuestions || filteredQuestions.length === 0) {
+        alert("⚠️ 문제 데이터가 아직 로드되지 않았습니다.\n\n로컬 파일(file://)로 여신 경우 run_quiz.bat을 실행하여 http://localhost:5000 으로 접속해 주세요!");
+        return;
+      }
       const q = filteredQuestions[currentIndex];
       ttsState = 'PLAYING_QUESTION';
 
@@ -2936,9 +2960,10 @@
       }
 
       const qNumFormatted = String(q.number).padStart(3, '0');
+      const qNumNatural = parseInt(q.number, 10);
       const segments = [
         {
-          text: `문제 ${qNumFormatted}번 문제입니다. ${q.question}`,
+          text: `문제 ${qNumNatural}번입니다. ${q.question}`,
           status: `문제 ${qNumFormatted}번 지문 낭독 중...`,
           pauseAfter: 500
         }
@@ -2963,7 +2988,10 @@
     }
 
     function ttsPlayExplanation(onFinish = null) {
-      if (filteredQuestions.length === 0) return;
+      if (!filteredQuestions || filteredQuestions.length === 0) {
+        alert("⚠️ 문제 데이터가 아직 로드되지 않았습니다.\n\n로컬 파일(file://)로 여신 경우 run_quiz.bat을 실행하여 http://localhost:5000 으로 접속해 주세요!");
+        return;
+      }
       const q = filteredQuestions[currentIndex];
       ttsState = 'PLAYING_EXPLANATION';
 
@@ -2988,6 +3016,10 @@
     function ttsTogglePodcast() {
       if (isPodcastMode) {
         ttsStop(true);
+        return;
+      }
+      if (!filteredQuestions || filteredQuestions.length === 0) {
+        alert("⚠️ 문제 데이터가 아직 로드되지 않았습니다.\n\n로컬 파일(file://)로 여신 경우 run_quiz.bat을 실행하여 http://localhost:5000 으로 접속해 주세요!");
         return;
       }
       isPodcastMode = true;

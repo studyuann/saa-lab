@@ -2678,7 +2678,7 @@
       { regex: /\bJSON\b/gi, replacement: "제이슨" },
       { regex: /\bSQL\b/gi, replacement: "에스큐엘" },
       { regex: /\bNoSQL\b/gi, replacement: "노에스큐엘" },
-      { regex: /\bQ0*(\d+)\b/gi, replacement: "문제 $001번" }
+      { regex: /\bQ0*(\d+)\b/gi, replacement: (match, p1) => `문제 ${p1.padStart(3, '0')}번` }
     ];
 
     function normalizeTextForSpeech(text) {
@@ -2876,10 +2876,11 @@
         displayOrder = getShuffledChoiceKeys(q.id, originalKeys);
       }
 
+      const qNumFormatted = String(q.number).padStart(3, '0');
       const segments = [
         {
-          text: `Q${q.number}번 문제입니다. ${q.question}`,
-          status: `Q${q.number} 지문 낭독 중...`,
+          text: `문제 ${qNumFormatted}번 문제입니다. ${q.question}`,
+          status: `문제 ${qNumFormatted}번 지문 낭독 중...`,
           pauseAfter: 500
         }
       ];

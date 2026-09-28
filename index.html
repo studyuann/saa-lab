@@ -758,6 +758,37 @@
       transform: none;
     }
 
+    .tts-voice-wrapper {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .tts-voice-select {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-radius: 6px;
+      padding: 0.32rem 0.5rem;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.15s ease;
+      max-width: 150px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .tts-voice-select:hover, .tts-voice-select:focus {
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+    }
+
+    .tts-voice-select option, .tts-voice-select optgroup {
+      background: var(--bg-card);
+      color: var(--text-main);
+    }
+
     .tts-speed-group {
       display: inline-flex;
       align-items: center;
@@ -1376,6 +1407,18 @@
         width: 100%;
       }
 
+      .tts-voice-wrapper {
+        width: 100%;
+        display: flex;
+      }
+
+      .tts-voice-select {
+        width: 100%;
+        max-width: 100%;
+        padding: 0.4rem 0.5rem;
+        font-size: 0.75rem;
+      }
+
       .tts-speed-group {
         display: flex;
         width: 100%;
@@ -1388,7 +1431,6 @@
       }
 
       .btn-tts-stop {
-        grid-column: span 2;
         padding: 0.45rem 0.5rem;
       }
 
@@ -1585,6 +1627,11 @@
           <button class="btn-tts btn-tts-podcast" id="btnTtsPodcast" onclick="ttsTogglePodcast()" title="핸즈프리 연속 모드: 문제 ➔ 4초 생각 ➔ 해설 ➔ 다음 문제 (단축키: P)">
             📻 팟캐스트 모드
           </button>
+          <div class="tts-voice-wrapper" title="낭독 화자(목소리) 선택">
+            <select class="tts-voice-select" id="ttsVoiceSelect" onchange="handleVoiceChange(this.value)">
+              <option value="">🎙️ 목소리 감지 중...</option>
+            </select>
+          </div>
           <div class="tts-speed-group" title="재생 배속 설정">
             <button class="btn-tts-speed" data-speed="1.0" onclick="setTtsSpeed(1.0)">1.0x</button>
             <button class="btn-tts-speed active" data-speed="1.2" onclick="setTtsSpeed(1.2)">1.2x</button>
@@ -2483,6 +2530,7 @@
     let isPodcastMode = false;
     let podcastTimer = null;
     let ttsVoices = [];
+    let selectedVoiceURI = localStorage.getItem('saa_tts_voice_uri') || '';
 
     const AWS_PRONUNCIATION_MAP = [
       { regex: /\bAWS\b/gi, replacement: "아마존 웹서비스" },
@@ -2591,6 +2639,7 @@
       
       const updateVoices = () => {
         ttsVoices = window.speechSynthesis.getVoices();
+        populateVoiceList();
       };
       updateVoices();
       window.speechSynthesis.onvoiceschanged = updateVoices;
@@ -2599,6 +2648,65 @@
       if (savedRate) {
         setTtsSpeed(parseFloat(savedRate), false);
       }
+    }
+
+    function populateVoiceList() {
+      if (!('speechSynthesis' in window)) return;
+      ttsVoices = window.speechSynthesis.getVoices();
+      const select = document.getElementById('ttsVoiceSelect');
+      if (!select) return;
+
+      const koVoices = ttsVoices.filter(v => v.lang && (v.lang.startsWith('ko') || v.lang.includes('KO')));
+      select.innerHTML = '';
+
+      if (koVoices.length === 0) {
+        select.innerHTML = '<option value="">🎙️ 기본 음성</option>';
+        return;
+      }
+
+      koVoices.forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v.voiceURI;
+        let cleanName = v.name
+          .replace(/Microsoft /g, '')
+          .replace(/Google /g, '')
+          .replace(/Online \(Natural\)/g, 'AI')
+          .replace(/ - Korean \(Korea\)/g, '')
+          .replace(/ - Korean \(Korean\)/g, '')
+          .replace(/ \(Korean\)/g, '');
+        opt.textContent = `🎙️ ${cleanName}`;
+        if (v.voiceURI === selectedVoiceURI) {
+          opt.selected = true;
+        }
+        select.appendChild(opt);
+      });
+
+      if (!selectedVoiceURI && koVoices.length > 0) {
+        const best = getBestKoreanVoice();
+        if (best) {
+          selectedVoiceURI = best.voiceURI;
+          select.value = best.voiceURI;
+        }
+      }
+    }
+
+    function handleVoiceChange(uri) {
+      selectedVoiceURI = uri;
+      localStorage.setItem('saa_tts_voice_uri', uri);
+      if (ttsState !== 'IDLE') {
+        ttsStop(false);
+      }
+    }
+
+    function getSelectedVoice() {
+      if (!ttsVoices || ttsVoices.length === 0) {
+        ttsVoices = window.speechSynthesis.getVoices();
+      }
+      if (selectedVoiceURI) {
+        const found = ttsVoices.find(v => v.voiceURI === selectedVoiceURI);
+        if (found) return found;
+      }
+      return getBestKoreanVoice();
     }
 
     function getBestKoreanVoice() {
@@ -2678,7 +2786,7 @@
         const utterance = new SpeechSynthesisUtterance(textToRead);
         utterance.rate = ttsRate;
         utterance.lang = 'ko-KR';
-        const voice = getBestKoreanVoice();
+        const voice = getSelectedVoice();
         if (voice) utterance.voice = voice;
 
         utterance.onend = () => {

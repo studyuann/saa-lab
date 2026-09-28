@@ -599,6 +599,197 @@
       font-weight: 600;
     }
 
+    /* TTS Audio Controller Bar */
+    .tts-player-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.5rem 0.85rem;
+      margin-bottom: 1.25rem;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .tts-player-bar.playing {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.18);
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.08), var(--bg-secondary));
+    }
+
+    .tts-player-bar.podcast-active {
+      border-color: var(--accent-aws);
+      box-shadow: 0 0 16px rgba(255, 153, 0, 0.22);
+      background: linear-gradient(135deg, rgba(255, 153, 0, 0.1), var(--bg-secondary));
+    }
+
+    .tts-left {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      min-width: 0;
+      flex-shrink: 0;
+    }
+
+    .tts-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.95rem;
+    }
+
+    .tts-wave {
+      display: inline-flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 14px;
+    }
+
+    .tts-wave span {
+      display: inline-block;
+      width: 3px;
+      height: 3px;
+      background: var(--text-dim);
+      border-radius: 2px;
+      transition: height 0.2s ease, background-color 0.2s ease;
+    }
+
+    .tts-player-bar.playing .tts-wave span {
+      background: var(--accent-blue);
+      animation: ttsWaveAnim 0.9s infinite ease-in-out alternate;
+    }
+
+    .tts-player-bar.podcast-active .tts-wave span {
+      background: var(--accent-aws);
+      animation: ttsWaveAnim 0.75s infinite ease-in-out alternate;
+    }
+
+    .tts-player-bar.playing .tts-wave span:nth-child(2),
+    .tts-player-bar.podcast-active .tts-wave span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .tts-player-bar.playing .tts-wave span:nth-child(3),
+    .tts-player-bar.podcast-active .tts-wave span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes ttsWaveAnim {
+      0% { height: 3px; }
+      100% { height: 13px; }
+    }
+
+    .tts-status-text {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 240px;
+    }
+
+    .tts-player-bar.playing .tts-status-text {
+      color: var(--accent-blue);
+    }
+
+    .tts-player-bar.podcast-active .tts-status-text {
+      color: var(--accent-aws);
+    }
+
+    .tts-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn-tts {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-radius: 6px;
+      padding: 0.32rem 0.65rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-tts:hover:not(:disabled) {
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+      transform: translateY(-1px);
+    }
+
+    .btn-tts.active {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+    }
+
+    .btn-tts-podcast.active {
+      background: rgba(255, 153, 0, 0.18) !important;
+      border-color: var(--accent-aws) !important;
+      color: var(--accent-aws) !important;
+    }
+
+    .btn-tts-stop {
+      color: var(--wrong-text);
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+
+    .btn-tts-stop:hover:not(:disabled) {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: var(--wrong-border);
+      color: var(--wrong-text);
+    }
+
+    .btn-tts:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .tts-speed-group {
+      display: inline-flex;
+      align-items: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 1px;
+      gap: 1px;
+    }
+
+    .btn-tts-speed {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.22rem 0.42rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+
+    .btn-tts-speed:hover {
+      color: var(--text-main);
+    }
+
+    .btn-tts-speed.active {
+      background: var(--accent-blue);
+      color: #0b0f19;
+      font-weight: 700;
+    }
+
     /* Choices List */
     .choices-list {
       display: flex;
@@ -1155,6 +1346,52 @@
         line-height: 1.55;
       }
 
+      /* Mobile TTS Controller Styling */
+      .tts-player-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.55rem;
+        padding: 0.65rem;
+      }
+
+      .tts-left {
+        justify-content: space-between;
+      }
+
+      .tts-status-text {
+        max-width: 100%;
+      }
+
+      .tts-controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.4rem;
+        width: 100%;
+      }
+
+      .btn-tts {
+        padding: 0.4rem 0.5rem;
+        font-size: 0.76rem;
+        justify-content: center;
+        width: 100%;
+      }
+
+      .tts-speed-group {
+        display: flex;
+        width: 100%;
+      }
+
+      .btn-tts-speed {
+        flex: 1;
+        text-align: center;
+        padding: 0.35rem 0.2rem;
+      }
+
+      .btn-tts-stop {
+        grid-column: span 2;
+        padding: 0.45rem 0.5rem;
+      }
+
       .card-footer {
         flex-direction: column;
         align-items: stretch;
@@ -1327,6 +1564,38 @@
         </div>
       </div>
 
+      <!-- TTS Audio Controller Bar -->
+      <div class="tts-player-bar" id="ttsPlayerBar">
+        <div class="tts-left">
+          <div class="tts-indicator" id="ttsIndicator">
+            <span class="tts-icon">🔊</span>
+            <span class="tts-wave" id="ttsWave">
+              <span></span><span></span><span></span>
+            </span>
+          </div>
+          <span class="tts-status-text" id="ttsStatusText">오디오 낭독 준비</span>
+        </div>
+        <div class="tts-controls">
+          <button class="btn-tts" id="btnTtsQuestion" onclick="ttsPlayQuestion()" title="문제 및 보기 낭독 (단축키: T)">
+            ▶️ 문제 듣기
+          </button>
+          <button class="btn-tts" id="btnTtsExp" onclick="ttsPlayExplanation()" title="정답 및 핵심 해설 낭독">
+            💡 해설 듣기
+          </button>
+          <button class="btn-tts btn-tts-podcast" id="btnTtsPodcast" onclick="ttsTogglePodcast()" title="핸즈프리 연속 모드: 문제 ➔ 4초 생각 ➔ 해설 ➔ 다음 문제 (단축키: P)">
+            📻 팟캐스트 모드
+          </button>
+          <div class="tts-speed-group" title="재생 배속 설정">
+            <button class="btn-tts-speed" data-speed="1.0" onclick="setTtsSpeed(1.0)">1.0x</button>
+            <button class="btn-tts-speed active" data-speed="1.2" onclick="setTtsSpeed(1.2)">1.2x</button>
+            <button class="btn-tts-speed" data-speed="1.5" onclick="setTtsSpeed(1.5)">1.5x</button>
+          </div>
+          <button class="btn-tts btn-tts-stop" id="btnTtsStop" onclick="ttsStop(true)" title="재생 중지" disabled>
+            ⏹️ 정지
+          </button>
+        </div>
+      </div>
+
       <!-- Question Text -->
       <div class="question-text" id="questionText">
         725개 문항을 로딩하는 중입니다...
@@ -1360,6 +1629,8 @@
           <span>단축키:</span>
           <span class="kbd">1~4 / A~D</span> 선택
           <span class="kbd">Space</span> 다음
+          <span class="kbd">T</span> 음성(TTS)
+          <span class="kbd">P</span> 팟캐스트
           <span class="kbd">B</span> 북마크
           <span class="kbd">N</span> 메모
           <span class="kbd">E</span> 해설
@@ -1543,6 +1814,7 @@
         document.getElementById('questionText').innerText = "quiz_data.json 파일을 불러오지 못했습니다.";
       }
       setupKeyboardShortcuts();
+      initTtsEngine();
     }
 
     async function loadServerState() {
@@ -1739,6 +2011,7 @@
     }
 
     function applyFilter(tag) {
+      ttsStop(true);
       setFilteredList(tag);
       currentIndex = 0;
       saveState();
@@ -1802,6 +2075,7 @@
 
       if (!isConfirmed) return;
 
+      ttsStop(true);
       userAnswers = {};
       flags.clear();
       isMockExam = false;
@@ -2013,10 +2287,14 @@
     function navigateQuestion(delta) {
       const nextIndex = currentIndex + delta;
       if (nextIndex >= 0 && nextIndex < filteredQuestions.length) {
+        if (!isPodcastMode) {
+          ttsStop(false);
+        }
         currentIndex = nextIndex;
         saveState();
         renderCurrentQuestion();
       } else if (nextIndex >= filteredQuestions.length) {
+        if (isPodcastMode) ttsStop(true);
         showResultModal();
       }
     }
@@ -2086,6 +2364,7 @@
     function startMockExam(force = false) {
       if (!force && !confirm("🎯 65문항 실전 모의고사를 시작하시겠습니까?\n- 130분 타이머 가동\n- 시험 종료 시 환산 점수(100~1000점) 및 합격/불합격 판정")) return;
 
+      ttsStop(true);
       const shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
       filteredQuestions = shuffled.slice(0, 65);
       isMockExam = true;
@@ -2183,6 +2462,8 @@
         if (key === 'B') toggleCurrentBookmark();
         if (key === 'E') toggleExplanationManual();
         if (key === 'N') toggleNoteBox();
+        if (key === 'T') ttsTogglePlay();
+        if (key === 'P') ttsTogglePodcast();
         if (e.code === 'Space' || e.key === 'ArrowRight') {
           e.preventDefault();
           navigateQuestion(1);
@@ -2193,6 +2474,367 @@
         }
       });
     }
+
+    // ==========================================
+    // 🎧 Native Web Speech TTS Engine
+    // ==========================================
+    let ttsRate = 1.2; // default 1.2x (optimal for Korean tech listening)
+    let ttsState = 'IDLE'; // 'IDLE', 'PLAYING_QUESTION', 'PLAYING_EXPLANATION', 'PODCAST_WAITING'
+    let isPodcastMode = false;
+    let podcastTimer = null;
+    let ttsVoices = [];
+
+    const AWS_PRONUNCIATION_MAP = [
+      { regex: /\bAWS\b/gi, replacement: "아마존 웹서비스" },
+      { regex: /\bEC2\b/gi, replacement: "이씨투" },
+      { regex: /\bS3\b/gi, replacement: "에스쓰리" },
+      { regex: /\bRDS\b/gi, replacement: "알디에스" },
+      { regex: /\bVPC\b/gi, replacement: "브이피씨" },
+      { regex: /\bIAM\b/gi, replacement: "아이엠" },
+      { regex: /\bALB\b/gi, replacement: "에이엘비" },
+      { regex: /\bNLB\b/gi, replacement: "엔엘비" },
+      { regex: /\bELB\b/gi, replacement: "이엘비" },
+      { regex: /\bEFS\b/gi, replacement: "이에프에스" },
+      { regex: /\bEBS\b/gi, replacement: "이비에스" },
+      { regex: /\bDynamoDB\b/gi, replacement: "다이나모디비" },
+      { regex: /\bSQS\b/gi, replacement: "에스큐에스" },
+      { regex: /\bSNS\b/gi, replacement: "에스엔에스" },
+      { regex: /\bKinesis\b/gi, replacement: "키네시스" },
+      { regex: /\bLambda\b/gi, replacement: "람다" },
+      { regex: /\bCloudWatch\b/gi, replacement: "클라우드워치" },
+      { regex: /\bCloudTrail\b/gi, replacement: "클라우드트레일" },
+      { regex: /\bCloudFront\b/gi, replacement: "클라우드프론트" },
+      { regex: /\bMulti-AZ\b/gi, replacement: "멀티 에이지" },
+      { regex: /\bAZ\b/gi, replacement: "에이지" },
+      { regex: /\bAZs\b/gi, replacement: "에이지들" },
+      { regex: /\bRoute 53\b/gi, replacement: "라우트 오십삼" },
+      { regex: /\bRoute53\b/gi, replacement: "라우트 오십삼" },
+      { regex: /\bFIFO\b/gi, replacement: "피포" },
+      { regex: /\bAurora\b/gi, replacement: "오로라" },
+      { regex: /\bRedshift\b/gi, replacement: "레드시프트" },
+      { regex: /\bKMS\b/gi, replacement: "케이엠에스" },
+      { regex: /\bWAF\b/gi, replacement: "와프" },
+      { regex: /\bShield\b/gi, replacement: "쉴드" },
+      { regex: /\bDirect Connect\b/gi, replacement: "다이렉트 커넥트" },
+      { regex: /\bDX\b/gi, replacement: "디엑스" },
+      { regex: /\bVPN\b/gi, replacement: "브이피엔" },
+      { regex: /\bNAT Gateway\b/gi, replacement: "낫 게이트웨이" },
+      { regex: /\bNAT\b/gi, replacement: "낫" },
+      { regex: /\bAPI Gateway\b/gi, replacement: "에이피아이 게이트웨이" },
+      { regex: /\bAPI\b/gi, replacement: "에이피아이" },
+      { regex: /\bCIDR\b/gi, replacement: "사이더" },
+      { regex: /\bIOPS\b/gi, replacement: "아이옵스" },
+      { regex: /\bIO1\b/gi, replacement: "아이오원" },
+      { regex: /\bIO2\b/gi, replacement: "아이오투" },
+      { regex: /\bGP2\b/gi, replacement: "지피투" },
+      { regex: /\bGP3\b/gi, replacement: "지피쓰리" },
+      { regex: /\bAMI\b/gi, replacement: "아미" },
+      { regex: /\bStep Functions\b/gi, replacement: "스텝 펑션스" },
+      { regex: /\bGlue\b/gi, replacement: "글루" },
+      { regex: /\bAthena\b/gi, replacement: "아테나" },
+      { regex: /\bEMR\b/gi, replacement: "이엠알" },
+      { regex: /\bElasticache\b/gi, replacement: "엘라스틱캐시" },
+      { regex: /\bRedis\b/gi, replacement: "레디스" },
+      { regex: /\bMemcached\b/gi, replacement: "멤캐시드" },
+      { regex: /\bAuto Scaling\b/gi, replacement: "오토 스케일링" },
+      { regex: /\bASG\b/gi, replacement: "에이에스지" },
+      { regex: /\bTransit Gateway\b/gi, replacement: "트랜짓 게이트웨이" },
+      { regex: /\bStorage Gateway\b/gi, replacement: "스토리지 게이트웨이" },
+      { regex: /\bSnowball\b/gi, replacement: "스노우볼" },
+      { regex: /\bSnowmobile\b/gi, replacement: "스노우모바일" },
+      { regex: /\bFargate\b/gi, replacement: "파게이트" },
+      { regex: /\bECS\b/gi, replacement: "이씨에스" },
+      { regex: /\bEKS\b/gi, replacement: "이에스케이" },
+      { regex: /\bSecrets Manager\b/gi, replacement: "시크릿 매니저" },
+      { regex: /\bParameter Store\b/gi, replacement: "파라미터 스토어" },
+      { regex: /\bSSM\b/gi, replacement: "에스에스엠" },
+      { regex: /\bCost Explorer\b/gi, replacement: "코스트 익스플로러" },
+      { regex: /\bBudgets\b/gi, replacement: "버짓" },
+      { regex: /\bOrganizations\b/gi, replacement: "오가니제이션즈" },
+      { regex: /\bSCP\b/gi, replacement: "에스씨피" },
+      { regex: /\bSSO\b/gi, replacement: "에스에스오" },
+      { regex: /\bControl Tower\b/gi, replacement: "컨트롤 타워" },
+      { regex: /\bSystems Manager\b/gi, replacement: "시스템즈 매니저" },
+      { regex: /\bRTO\b/gi, replacement: "알티오" },
+      { regex: /\bRPO\b/gi, replacement: "알피오" },
+      { regex: /\bNFS\b/gi, replacement: "엔에프에스" },
+      { regex: /\bSMB\b/gi, replacement: "에스엠비" },
+      { regex: /\bHTTP\b/gi, replacement: "에이치티티피" },
+      { regex: /\bHTTPS\b/gi, replacement: "에이치티티피에스" },
+      { regex: /\bTCP\b/gi, replacement: "티씨피" },
+      { regex: /\bUDP\b/gi, replacement: "유디피" },
+      { regex: /\bSSL\b/gi, replacement: "에스에스엘" },
+      { regex: /\bTLS\b/gi, replacement: "티엘에스" },
+      { regex: /\bIP\b/gi, replacement: "아이피" },
+      { regex: /\bURL\b/gi, replacement: "유알엘" },
+      { regex: /\bJSON\b/gi, replacement: "제이슨" },
+      { regex: /\bSQL\b/gi, replacement: "시퀄" },
+      { regex: /\bNoSQL\b/gi, replacement: "노시퀄" }
+    ];
+
+    function normalizeTextForSpeech(text) {
+      if (!text) return '';
+      let clean = text.replace(/<[^>]*>/g, ' '); // remove html tags
+      AWS_PRONUNCIATION_MAP.forEach(item => {
+        clean = clean.replace(item.regex, item.replacement);
+      });
+      return clean;
+    }
+
+    function initTtsEngine() {
+      if (!('speechSynthesis' in window)) {
+        console.warn("Speech Synthesis is not supported in this browser.");
+        const ttsBar = document.getElementById('ttsPlayerBar');
+        if (ttsBar) ttsBar.style.display = 'none';
+        return;
+      }
+      
+      const updateVoices = () => {
+        ttsVoices = window.speechSynthesis.getVoices();
+      };
+      updateVoices();
+      window.speechSynthesis.onvoiceschanged = updateVoices;
+
+      const savedRate = localStorage.getItem('saa_tts_rate');
+      if (savedRate) {
+        setTtsSpeed(parseFloat(savedRate), false);
+      }
+    }
+
+    function getBestKoreanVoice() {
+      if (!ttsVoices || ttsVoices.length === 0) {
+        ttsVoices = window.speechSynthesis.getVoices();
+      }
+      const koVoices = ttsVoices.filter(v => v.lang && (v.lang.startsWith('ko') || v.lang.includes('KO')));
+      if (koVoices.length === 0) return null;
+      const preferred = koVoices.find(v => /natural|neural|google|yuna|heami/i.test(v.name));
+      return preferred || koVoices[0];
+    }
+
+    function setTtsSpeed(speed, shouldSave = true) {
+      ttsRate = speed;
+      document.querySelectorAll('.btn-tts-speed').forEach(btn => {
+        btn.classList.toggle('active', parseFloat(btn.getAttribute('data-speed')) === speed);
+      });
+      if (shouldSave) {
+        localStorage.setItem('saa_tts_rate', speed);
+      }
+    }
+
+    function updateTtsUi(statusText, isPlaying) {
+      const bar = document.getElementById('ttsPlayerBar');
+      const textEl = document.getElementById('ttsStatusText');
+      const stopBtn = document.getElementById('btnTtsStop');
+      const qBtn = document.getElementById('btnTtsQuestion');
+      const expBtn = document.getElementById('btnTtsExp');
+      const podBtn = document.getElementById('btnTtsPodcast');
+
+      if (textEl) textEl.textContent = statusText;
+      if (stopBtn) stopBtn.disabled = !isPlaying && !isPodcastMode;
+
+      if (bar) {
+        bar.classList.toggle('playing', isPlaying);
+        bar.classList.toggle('podcast-active', isPodcastMode);
+      }
+
+      if (podBtn) podBtn.classList.toggle('active', isPodcastMode);
+      if (qBtn) qBtn.classList.toggle('active', isPlaying && ttsState === 'PLAYING_QUESTION');
+      if (expBtn) expBtn.classList.toggle('active', isPlaying && ttsState === 'PLAYING_EXPLANATION');
+    }
+
+    function ttsStop(clearPodcast = true) {
+      if (podcastTimer) {
+        clearInterval(podcastTimer);
+        podcastTimer = null;
+      }
+      if (clearPodcast) {
+        isPodcastMode = false;
+      }
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      ttsState = 'IDLE';
+      updateTtsUi(isPodcastMode ? '📻 팟캐스트 대기 중' : '오디오 낭독 준비', false);
+    }
+
+    function speakSequence(segments, onAllComplete) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+
+      let idx = 0;
+      function speakNext() {
+        if (ttsState === 'IDLE' && !isPodcastMode) return;
+        if (idx >= segments.length) {
+          if (onAllComplete) onAllComplete();
+          return;
+        }
+
+        const seg = segments[idx];
+        idx++;
+
+        updateTtsUi(seg.status, true);
+
+        const textToRead = normalizeTextForSpeech(seg.text);
+        const utterance = new SpeechSynthesisUtterance(textToRead);
+        utterance.rate = ttsRate;
+        utterance.lang = 'ko-KR';
+        const voice = getBestKoreanVoice();
+        if (voice) utterance.voice = voice;
+
+        utterance.onend = () => {
+          setTimeout(speakNext, seg.pauseAfter || 250);
+        };
+
+        utterance.onerror = (e) => {
+          console.warn("TTS Utterance error:", e);
+          setTimeout(speakNext, 250);
+        };
+
+        window.speechSynthesis.speak(utterance);
+      }
+
+      speakNext();
+    }
+
+    function ttsPlayQuestion(onFinish = null) {
+      if (filteredQuestions.length === 0) return;
+      const q = filteredQuestions[currentIndex];
+      ttsState = 'PLAYING_QUESTION';
+
+      const originalKeys = ['A', 'B', 'C', 'D', 'E'].filter(k => q.choices && q.choices[k]);
+      let displayOrder = [...originalKeys];
+      if (isShuffle) {
+        displayOrder = getShuffledChoiceKeys(q.id, originalKeys);
+      }
+
+      const segments = [
+        {
+          text: `Q${q.number}번 문제입니다. ${q.question}`,
+          status: `Q${q.number} 지문 낭독 중...`,
+          pauseAfter: 500
+        }
+      ];
+
+      displayOrder.forEach((key, slotIdx) => {
+        const slotLetter = originalKeys[slotIdx];
+        segments.push({
+          text: `보기 ${slotLetter}번. ${q.choices[key]}`,
+          status: `보기 ${slotLetter} 낭독 중...`,
+          pauseAfter: 350
+        });
+      });
+
+      speakSequence(segments, () => {
+        if (ttsState === 'PLAYING_QUESTION') {
+          ttsState = 'IDLE';
+          updateTtsUi('문제 낭독 완료', false);
+        }
+        if (onFinish) onFinish();
+      });
+    }
+
+    function ttsPlayExplanation(onFinish = null) {
+      if (filteredQuestions.length === 0) return;
+      const q = filteredQuestions[currentIndex];
+      ttsState = 'PLAYING_EXPLANATION';
+
+      const expText = q.explanation || "상세 해설이 준비되어 있습니다.";
+      const segments = [
+        {
+          text: `정답은 ${q.answer}번 입니다. 아키텍처 해설입니다. ${expText}`,
+          status: `정답 및 핵심 해설 낭독 중...`,
+          pauseAfter: 500
+        }
+      ];
+
+      speakSequence(segments, () => {
+        if (ttsState === 'PLAYING_EXPLANATION') {
+          ttsState = 'IDLE';
+          updateTtsUi('해설 낭독 완료', false);
+        }
+        if (onFinish) onFinish();
+      });
+    }
+
+    function ttsTogglePodcast() {
+      if (isPodcastMode) {
+        ttsStop(true);
+        return;
+      }
+      isPodcastMode = true;
+      runPodcastStep();
+    }
+
+    function runPodcastStep() {
+      if (!isPodcastMode || filteredQuestions.length === 0) return;
+      const q = filteredQuestions[currentIndex];
+
+      // Step 1: Read Question & Options
+      ttsPlayQuestion(() => {
+        if (!isPodcastMode) return;
+
+        // Step 2: 4-second Countdown for thinking
+        ttsState = 'PODCAST_WAITING';
+        let countdown = 4;
+        updateTtsUi(`📻 팟캐스트: 생각할 시간 (${countdown}초)...`, true);
+
+        if (podcastTimer) clearInterval(podcastTimer);
+        podcastTimer = setInterval(() => {
+          if (!isPodcastMode) {
+            clearInterval(podcastTimer);
+            return;
+          }
+          countdown--;
+          if (countdown > 0) {
+            updateTtsUi(`📻 팟캐스트: 생각할 시간 (${countdown}초)...`, true);
+          } else {
+            clearInterval(podcastTimer);
+            podcastTimer = null;
+
+            // Automatically open explanation box on UI
+            const expBox = document.getElementById('explanationBox');
+            const expContent = document.getElementById('explanationContent');
+            if (expBox && expContent) {
+              expContent.textContent = q.explanation || "상세 해설이 준비되어 있습니다.";
+              expBox.classList.add('show');
+            }
+
+            // Step 3: Read Answer & Explanation
+            ttsPlayExplanation(() => {
+              if (!isPodcastMode) return;
+
+              // Step 4: Short wait then advance to next question
+              updateTtsUi('📻 다음 문제로 자동 이동합니다...', true);
+              setTimeout(() => {
+                if (!isPodcastMode) return;
+                if (currentIndex < filteredQuestions.length - 1) {
+                  navigateQuestion(1);
+                  setTimeout(runPodcastStep, 600);
+                } else {
+                  isPodcastMode = false;
+                  ttsStop(true);
+                  alert("🎉 모든 문제의 팟캐스트 연속 학습이 완료되었습니다!");
+                }
+              }, 1800);
+            });
+          }
+        }, 1000);
+      });
+    }
+
+    function ttsTogglePlay() {
+      if (ttsState !== 'IDLE') {
+        ttsStop(true);
+      } else {
+        ttsPlayQuestion();
+      }
+    }
+
+    window.addEventListener('beforeunload', () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    });
 
     window.onload = init;
   </script>

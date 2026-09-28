@@ -11,3 +11,6 @@ get_target.ps1
 # Logs
 server.log
 *.log
+
+# Audio cache
+audio_cache/

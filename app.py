@@ -7,11 +7,43 @@ import time
 import json
 import os
 import sys
+import hashlib
+import urllib.parse
+import asyncio
+
+try:
+    import edge_tts
+except ImportError:
+    edge_tts = None
 
 PORT = int(os.environ.get("PORT", 5000))
 DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 PROGRESS_FILE = os.path.join(DIRECTORY, "user_progress.json")
 LOG_FILE = os.path.join(DIRECTORY, "server.log")
+AUDIO_CACHE_DIR = os.path.join(DIRECTORY, "audio_cache")
+os.makedirs(AUDIO_CACHE_DIR, exist_ok=True)
+
+def get_or_create_tts_audio(text, voice="ko-KR-SunHiNeural", rate="+0%"):
+    if not edge_tts:
+        return None
+    cache_key = f"{voice}_{rate}_{text}".encode("utf-8")
+    filename = hashlib.md5(cache_key).hexdigest() + ".mp3"
+    filepath = os.path.join(AUDIO_CACHE_DIR, filename)
+
+    if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
+        return filepath
+
+    try:
+        async def _gen():
+            c = edge_tts.Communicate(text, voice, rate=rate)
+            await c.save(filepath)
+        asyncio.run(_gen())
+        if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
+            return filepath
+    except Exception as e:
+        if sys.stderr:
+            sys.stderr.write(f"Edge TTS synthesis error: {e}\n")
+    return None
 
 # pythonw (백그라운드/GUI) 실행 시 stdout/stderr가 None이므로 파일로 안전하게 리다이렉트
 if sys.stdout is None or sys.stderr is None:
@@ -78,6 +110,40 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             with open(os.path.join(DIRECTORY, "quiz_data.json"), "rb") as f:
                 self.wfile.write(f.read())
             return
+
+        # 5. 고음질 Edge-TTS 실시간 스트리밍 & 캐시 API (/api/tts 및 /saa/api/tts)
+        if clean_path in ["/api/tts", "/saa/api/tts"]:
+            query_str = self.path.split("?")[1] if "?" in self.path else ""
+            params = urllib.parse.parse_qs(query_str)
+            text = params.get("text", [""])[0]
+            voice = params.get("voice", ["ko-KR-SunHiNeural"])[0]
+            rate = params.get("rate", ["+0%"])[0]
+
+            if not text:
+                self.send_response(400)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.end_headers()
+                self.wfile.write(b'{"error": "text parameter is required"}')
+                return
+
+            filepath = get_or_create_tts_audio(text, voice, rate)
+            if filepath and os.path.exists(filepath):
+                file_size = os.path.getsize(filepath)
+                self.send_response(200)
+                self.send_header("Content-Type", "audio/mpeg")
+                self.send_header("Content-Length", str(file_size))
+                self.send_header("Cache-Control", "public, max-age=31536000, immutable")
+                self.end_headers()
+                with open(filepath, "rb") as f:
+                    while chunk := f.read(65536):
+                        self.wfile.write(chunk)
+                return
+            else:
+                self.send_response(503)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.end_headers()
+                self.wfile.write(b'{"error": "Edge-TTS unavailable"}')
+                return
 
         super().do_GET()
 

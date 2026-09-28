@@ -2715,44 +2715,58 @@
       }
     }
 
+    let ttsAudioPlayer = new Audio();
+
     function populateVoiceList() {
-      if (!('speechSynthesis' in window)) return;
-      ttsVoices = window.speechSynthesis.getVoices();
       const select = document.getElementById('ttsVoiceSelect');
       if (!select) return;
 
-      const koVoices = ttsVoices.filter(v => v.lang && (v.lang.startsWith('ko') || v.lang.includes('KO')));
       select.innerHTML = '';
 
-      if (koVoices.length === 0) {
-        select.innerHTML = '<option value="">🎙️ 기본 음성</option>';
-        return;
+      // 1. Edge-TTS AI Voices (Primary - Studio Quality)
+      const aiGroup = document.createElement('optgroup');
+      aiGroup.label = '✨ AI 성우 (Edge-TTS 고음질)';
+
+      const sunHiOpt = document.createElement('option');
+      sunHiOpt.value = 'edge:ko-KR-SunHiNeural';
+      sunHiOpt.textContent = '🌟 Sun-Hi (여성 아나운서)';
+      aiGroup.appendChild(sunHiOpt);
+
+      const inJoonOpt = document.createElement('option');
+      inJoonOpt.value = 'edge:ko-KR-InJoonNeural';
+      inJoonOpt.textContent = '🎙️ In-Joon (남성 성우)';
+      aiGroup.appendChild(inJoonOpt);
+
+      select.appendChild(aiGroup);
+
+      // 2. Browser Local Voices (Fallback - Offline)
+      if ('speechSynthesis' in window) {
+        ttsVoices = window.speechSynthesis.getVoices();
+        const koVoices = ttsVoices.filter(v => v.lang && (v.lang.startsWith('ko') || v.lang.includes('KO')));
+        if (koVoices.length > 0) {
+          const localGroup = document.createElement('optgroup');
+          localGroup.label = '🌐 브라우저 로컬 음성 (오프라인용)';
+          koVoices.forEach(v => {
+            const opt = document.createElement('option');
+            opt.value = `browser:${v.voiceURI}`;
+            let cleanName = v.name
+              .replace(/Microsoft /g, '')
+              .replace(/Google /g, '')
+              .replace(/Online \(Natural\)/g, 'AI')
+              .replace(/ - Korean \(Korea\)/g, '')
+              .replace(/ - Korean \(Korean\)/g, '')
+              .replace(/ \(Korean\)/g, '');
+            opt.textContent = `🔈 ${cleanName} (로컬)`;
+            localGroup.appendChild(opt);
+          });
+          select.appendChild(localGroup);
+        }
       }
 
-      koVoices.forEach(v => {
-        const opt = document.createElement('option');
-        opt.value = v.voiceURI;
-        let cleanName = v.name
-          .replace(/Microsoft /g, '')
-          .replace(/Google /g, '')
-          .replace(/Online \(Natural\)/g, 'AI')
-          .replace(/ - Korean \(Korea\)/g, '')
-          .replace(/ - Korean \(Korean\)/g, '')
-          .replace(/ \(Korean\)/g, '');
-        opt.textContent = `🎙️ ${cleanName}`;
-        if (v.voiceURI === selectedVoiceURI) {
-          opt.selected = true;
-        }
-        select.appendChild(opt);
-      });
-
-      if (!selectedVoiceURI && koVoices.length > 0) {
-        const best = getBestKoreanVoice();
-        if (best) {
-          selectedVoiceURI = best.voiceURI;
-          select.value = best.voiceURI;
-        }
-      }
+      // Default or saved voice
+      const saved = localStorage.getItem('saa_tts_voice_uri') || 'edge:ko-KR-SunHiNeural';
+      selectedVoiceURI = saved;
+      select.value = saved;
     }
 
     function handleVoiceChange(uri) {
@@ -2764,17 +2778,20 @@
     }
 
     function getSelectedVoice() {
+      if (!('speechSynthesis' in window)) return null;
       if (!ttsVoices || ttsVoices.length === 0) {
         ttsVoices = window.speechSynthesis.getVoices();
       }
-      if (selectedVoiceURI) {
-        const found = ttsVoices.find(v => v.voiceURI === selectedVoiceURI);
+      const rawURI = selectedVoiceURI.startsWith('browser:') ? selectedVoiceURI.replace('browser:', '') : selectedVoiceURI;
+      if (rawURI) {
+        const found = ttsVoices.find(v => v.voiceURI === rawURI);
         if (found) return found;
       }
       return getBestKoreanVoice();
     }
 
     function getBestKoreanVoice() {
+      if (!('speechSynthesis' in window)) return null;
       if (!ttsVoices || ttsVoices.length === 0) {
         ttsVoices = window.speechSynthesis.getVoices();
       }
@@ -2786,6 +2803,9 @@
 
     function setTtsSpeed(speed, shouldSave = true) {
       ttsRate = speed;
+      if (ttsAudioPlayer) {
+        ttsAudioPlayer.playbackRate = speed;
+      }
       document.querySelectorAll('.btn-tts-speed').forEach(btn => {
         btn.classList.toggle('active', parseFloat(btn.getAttribute('data-speed')) === speed);
       });
@@ -2823,6 +2843,10 @@
       if (clearPodcast) {
         isPodcastMode = false;
       }
+      if (ttsAudioPlayer) {
+        ttsAudioPlayer.pause();
+        ttsAudioPlayer.currentTime = 0;
+      }
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
       }
@@ -2831,10 +2855,13 @@
     }
 
     function speakSequence(segments, onAllComplete) {
-      if (!('speechSynthesis' in window)) return;
-      window.speechSynthesis.cancel();
+      ttsStop(false);
+
+      const isEdgeTts = selectedVoiceURI.startsWith('edge:') || !selectedVoiceURI;
+      const edgeVoiceName = isEdgeTts ? (selectedVoiceURI.replace('edge:', '') || 'ko-KR-SunHiNeural') : null;
 
       let idx = 0;
+
       function speakNext() {
         if (ttsState === 'IDLE' && !isPodcastMode) return;
         if (idx >= segments.length) {
@@ -2844,29 +2871,57 @@
 
         const seg = segments[idx];
         idx++;
-
         updateTtsUi(seg.status, true);
-
         const textToRead = normalizeTextForSpeech(seg.text);
-        const utterance = new SpeechSynthesisUtterance(textToRead);
-        utterance.rate = ttsRate;
-        utterance.lang = 'ko-KR';
-        const voice = getSelectedVoice();
-        if (voice) utterance.voice = voice;
 
-        utterance.onend = () => {
-          setTimeout(speakNext, seg.pauseAfter || 250);
-        };
+        // 1. Primary: Edge-TTS AI Voice (Cloud & Local Cache)
+        if (isEdgeTts && navigator.onLine) {
+          const ttsUrl = `/api/tts?text=${encodeURIComponent(textToRead)}&voice=${encodeURIComponent(edgeVoiceName)}`;
+          ttsAudioPlayer.src = ttsUrl;
+          ttsAudioPlayer.playbackRate = ttsRate;
 
-        utterance.onerror = (e) => {
-          console.warn("TTS Utterance error:", e);
-          setTimeout(speakNext, 250);
-        };
+          ttsAudioPlayer.onended = () => {
+            setTimeout(speakNext, seg.pauseAfter || 250);
+          };
 
-        window.speechSynthesis.speak(utterance);
+          ttsAudioPlayer.onerror = (err) => {
+            console.warn("Edge-TTS error, gracefully falling back to Web Speech API:", err);
+            speakSegmentWebSpeech(textToRead, seg.pauseAfter, speakNext);
+          };
+
+          ttsAudioPlayer.play().catch(e => {
+            console.warn("Edge-TTS play error, gracefully falling back:", e);
+            speakSegmentWebSpeech(textToRead, seg.pauseAfter, speakNext);
+          });
+        } else {
+          // 2. Fallback: Browser Local Web Speech API
+          speakSegmentWebSpeech(textToRead, seg.pauseAfter, speakNext);
+        }
       }
 
       speakNext();
+    }
+
+    function speakSegmentWebSpeech(textToRead, pauseAfter, onEndCallback) {
+      if (!('speechSynthesis' in window)) {
+        if (onEndCallback) onEndCallback();
+        return;
+      }
+      const utterance = new SpeechSynthesisUtterance(textToRead);
+      utterance.rate = ttsRate;
+      utterance.lang = 'ko-KR';
+      const voice = getSelectedVoice();
+      if (voice) utterance.voice = voice;
+
+      utterance.onend = () => {
+        setTimeout(onEndCallback, pauseAfter || 250);
+      };
+      utterance.onerror = (e) => {
+        console.warn("SpeechSynthesis error:", e);
+        setTimeout(onEndCallback, 250);
+      };
+
+      window.speechSynthesis.speak(utterance);
     }
 
     function ttsPlayQuestion(onFinish = null) {

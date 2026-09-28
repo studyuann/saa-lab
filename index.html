@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="ko" data-theme="dark" data-font-size="md">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AWS SAA-C03 Interactive Master (725 Questions)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap"
+    rel="stylesheet">
   <style>
     :root {
       --font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --code-font: 'JetBrains Mono', monospace;
-      
+
       /* Dark Theme */
       --bg-primary: #0b0f19;
       --bg-secondary: #131b2e;
@@ -19,32 +22,32 @@
       --bg-card-hover: #273549;
       --border-color: #334155;
       --border-focus: #38bdf8;
-      
+
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --text-dim: #64748b;
-      
+
       --accent-aws: #ff9900;
       --accent-blue: #38bdf8;
       --accent-cyan: #06b6d4;
       --accent-purple: #a855f7;
-      
+
       --correct-bg: rgba(16, 185, 129, 0.15);
       --correct-border: #10b981;
       --correct-text: #34d399;
-      
+
       --wrong-bg: rgba(239, 68, 68, 0.15);
       --wrong-border: #ef4444;
       --wrong-text: #f87171;
-      
+
       --highlight-bg: rgba(255, 153, 0, 0.25);
       --highlight-border: #ff9900;
       --highlight-text: #fbbf24;
-      
+
       --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
       --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.25);
       --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
-      
+
       --base-font-size: 16px;
     }
 
@@ -55,15 +58,15 @@
       --bg-card-hover: #f8fafc;
       --border-color: #e2e8f0;
       --border-focus: #0284c7;
-      
+
       --text-main: #0f172a;
       --text-muted: #475569;
       --text-dim: #94a3b8;
-      
+
       --correct-bg: #ecfdf5;
       --correct-border: #10b981;
       --correct-text: #047857;
-      
+
       --wrong-bg: #fef2f2;
       --wrong-border: #ef4444;
       --wrong-text: #b91c1c;
@@ -71,18 +74,33 @@
       --highlight-bg: #fef3c7;
       --highlight-border: #f59e0b;
       --highlight-text: #b45309;
-      
+
       --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
       --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
       --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     }
 
-    [data-font-size="sm"] { --base-font-size: 14px; }
-    [data-font-size="md"] { --base-font-size: 16px; }
-    [data-font-size="lg"] { --base-font-size: 18px; }
-    [data-font-size="xl"] { --base-font-size: 20px; }
+    [data-font-size="sm"] {
+      --base-font-size: 14px;
+    }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    [data-font-size="md"] {
+      --base-font-size: 16px;
+    }
+
+    [data-font-size="lg"] {
+      --base-font-size: 18px;
+    }
+
+    [data-font-size="xl"] {
+      --base-font-size: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       font-family: var(--font-family);
@@ -407,8 +425,15 @@
     }
 
     @keyframes modalSlide {
-      from { transform: translateY(10px) scale(0.98); opacity: 0; }
-      to { transform: translateY(0) scale(1); opacity: 1; }
+      from {
+        transform: translateY(10px) scale(0.98);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
     }
 
     .topic-modal-head {
@@ -504,8 +529,15 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .question-header {
@@ -568,7 +600,8 @@
       gap: 4px;
     }
 
-    .btn-action-tool:hover, .btn-action-tool.active {
+    .btn-action-tool:hover,
+    .btn-action-tool.active {
       color: #fbbf24;
       border-color: #fbbf24;
       background: rgba(251, 191, 36, 0.1);
@@ -677,8 +710,13 @@
     }
 
     @keyframes ttsWaveAnim {
-      0% { height: 3px; }
-      100% { height: 13px; }
+      0% {
+        height: 3px;
+      }
+
+      100% {
+        height: 13px;
+      }
     }
 
     .tts-status-text {
@@ -779,12 +817,14 @@
       white-space: nowrap;
     }
 
-    .tts-voice-select:hover, .tts-voice-select:focus {
+    .tts-voice-select:hover,
+    .tts-voice-select:focus {
       border-color: var(--accent-blue);
       color: var(--accent-blue);
     }
 
-    .tts-voice-select option, .tts-voice-select optgroup {
+    .tts-voice-select option,
+    .tts-voice-select optgroup {
       background: var(--bg-card);
       color: var(--text-main);
     }
@@ -1211,8 +1251,15 @@
       margin-top: 0.5rem;
     }
 
-    .pass-badge.pass { background: var(--correct-border); color: #ffffff; }
-    .pass-badge.fail { background: var(--wrong-border); color: #ffffff; }
+    .pass-badge.pass {
+      background: var(--correct-border);
+      color: #ffffff;
+    }
+
+    .pass-badge.fail {
+      background: var(--wrong-border);
+      color: #ffffff;
+    }
 
     /* ==========================================================================
        📱 Mobile & Tablet Responsive Design (Media Queries)
@@ -1442,10 +1489,11 @@
       }
 
       .keyboard-guide {
-        display: none; /* Hide PC keyboard tips on smartphone */
+        display: none;
+        /* Hide PC keyboard tips on smartphone */
       }
 
-      .card-footer > div:last-child {
+      .card-footer>div:last-child {
         width: 100%;
         display: flex;
         gap: 0.4rem;
@@ -1459,11 +1507,13 @@
       }
 
       /* Modals on Mobile */
-      .modal-overlay, .topic-modal-overlay {
+      .modal-overlay,
+      .topic-modal-overlay {
         padding: 0.5rem;
       }
 
-      .modal-content, .topic-modal-card {
+      .modal-content,
+      .topic-modal-card {
         max-height: 92vh;
         border-radius: 12px;
       }
@@ -1479,6 +1529,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <!-- Header (Top Row: Brand + Search + Settings/Tools in Single Line) -->
@@ -1510,8 +1561,10 @@
 
         <!-- Keyword Highlight & Shuffle Toggle -->
         <div class="control-group">
-          <button class="btn-icon" id="btnKwHighlight" onclick="toggleKwHighlight()" title="핵심 단서 키워드 강조 On/Off">🖍️</button>
-          <button class="btn-icon" id="btnShuffle" onclick="toggleShuffle()" title="보기 A~D 무작위 셔플 (단순 암기 방지)">🔀</button>
+          <button class="btn-icon" id="btnKwHighlight" onclick="toggleKwHighlight()"
+            title="핵심 단서 키워드 강조 On/Off">🖍️</button>
+          <button class="btn-icon" id="btnShuffle" onclick="toggleShuffle()"
+            title="보기 A~D 무작위 셔플 (단순 암기 방지)">🔀</button>
         </div>
 
         <!-- Font Size Controls -->
@@ -1547,7 +1600,8 @@
           <button class="tag-chip btn-action-main" onclick="openNavGrid()" title="전체 725문항 바둑판 네비게이터">
             🗺️ <strong>문항목록 (725)</strong>
           </button>
-          <button class="tag-chip btn-action-main" id="btnExamSim" onclick="startMockExam()" title="65문항 실전 모의고사 (130분)">
+          <button class="tag-chip btn-action-main" id="btnExamSim" onclick="startMockExam()"
+            title="65문항 실전 모의고사 (130분)">
             🎯 <strong>모의고사 (65)</strong>
           </button>
         </div>
@@ -1573,7 +1627,7 @@
         <button class="tag-chip" id="btnFilterBookmarks" onclick="applyFilter('BOOKMARKS')">⭐ 북마크</button>
         <button class="tag-chip" id="btnFilterWrong" onclick="applyFilter('WRONG')">❌ 오답노트</button>
         <button class="tag-chip" id="btnFilterNotes" onclick="applyFilter('NOTES')">📝 메모한 문제</button>
-        
+
         <!-- Category/Topic Drawer Button -->
         <button class="tag-chip btn-topic-selector" id="btnTopicSelector" onclick="openTopicModal()">
           🏷️ <span id="topicSelectorLabel">주제별 태그 선택 ▼</span>
@@ -1600,7 +1654,8 @@
           <button class="btn-action-tool btn-flag" id="btnFlag" onclick="toggleFlag()" title="검토용 깃발 (실전 모드)">
             🚩 검토
           </button>
-          <button class="btn-action-tool btn-bookmark" id="btnBookmark" onclick="toggleCurrentBookmark()" title="북마크 저장 (단축키: B)">
+          <button class="btn-action-tool btn-bookmark" id="btnBookmark" onclick="toggleCurrentBookmark()"
+            title="북마크 저장 (단축키: B)">
             ⭐ 북마크
           </button>
         </div>
@@ -1624,7 +1679,8 @@
           <button class="btn-tts" id="btnTtsExp" onclick="ttsPlayExplanation()" title="정답 및 핵심 해설 낭독">
             💡 해설 듣기
           </button>
-          <button class="btn-tts btn-tts-podcast" id="btnTtsPodcast" onclick="ttsTogglePodcast()" title="핸즈프리 연속 모드: 문제 ➔ 4초 생각 ➔ 해설 ➔ 다음 문제 (단축키: P)">
+          <button class="btn-tts btn-tts-podcast" id="btnTtsPodcast" onclick="ttsTogglePodcast()"
+            title="핸즈프리 연속 모드: 문제 ➔ 4초 생각 ➔ 해설 ➔ 다음 문제 (단축키: P)">
             📻 팟캐스트 모드
           </button>
           <div class="tts-voice-wrapper" title="낭독 화자(목소리) 선택">
@@ -1659,7 +1715,8 @@
           <span>📝 나만의 학습 메모</span>
           <span style="font-size: 0.75rem; color: var(--text-dim);">입력 시 실시간 자동 저장</span>
         </div>
-        <textarea class="note-textarea" id="noteInput" placeholder="헷갈렸던 이유나 핵심 아키텍처 개념을 적어두세요..." oninput="handleNoteInput()"></textarea>
+        <textarea class="note-textarea" id="noteInput" placeholder="헷갈렸던 이유나 핵심 아키텍처 개념을 적어두세요..."
+          oninput="handleNoteInput()"></textarea>
       </div>
 
       <!-- Explanation Box -->
@@ -1751,17 +1808,20 @@
             <div style="font-size: 0.78rem; color: var(--text-muted);">/ 1000 점</div>
           </div>
           <div class="pass-badge pass" id="passBadgeText">PASS (합격)</div>
-          
+
           <div style="margin-top: 1.5rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem;">
-            <div style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-color);">
+            <div
+              style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-color);">
               <div style="font-size: 1.2rem; font-weight: 700; color: var(--correct-text);" id="repCorrect">0</div>
               <div style="font-size: 0.75rem; color: var(--text-dim);">맞은 문제</div>
             </div>
-            <div style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-color);">
+            <div
+              style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-color);">
               <div style="font-size: 1.2rem; font-weight: 700; color: var(--wrong-text);" id="repWrong">0</div>
               <div style="font-size: 0.75rem; color: var(--text-dim);">틀린 문제</div>
             </div>
-            <div style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-color);">
+            <div
+              style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-color);">
               <div style="font-size: 1.2rem; font-weight: 700;" id="repTime">00:00</div>
               <div style="font-size: 0.75rem; color: var(--text-dim);">소요 시간</div>
             </div>
@@ -1787,13 +1847,13 @@
     let currentFontSize = 'md';
     let isKwHighlight = true;
     let isShuffle = false;
-    
+
     // User progress
     let userAnswers = {}; // { qId: selectedOption }
     let userNotes = {}; // { qId: "note text" }
     let bookmarks = new Set();
     let flags = new Set(); // 검토 플래그
-    
+
     // Mock Exam State
     let isMockExam = false;
     let mockExamTimer = null;
@@ -1849,7 +1909,7 @@
         const res = await fetch('quiz_data.json');
         allQuestions = await res.json();
         renderTopicModalContent();
-        
+
         setFilteredList(currentTag);
         if (currentIndex < 0 || currentIndex >= filteredQuestions.length) {
           currentIndex = 0;
@@ -1914,7 +1974,7 @@
       document.documentElement.setAttribute('data-theme', currentTheme);
       document.getElementById('themeIcon').textContent = currentTheme === 'dark' ? '🌙' : '☀️';
       setFontSize(currentFontSize, false);
-      
+
       document.getElementById('btnModePractice').classList.toggle('active', currentMode === 'practice');
       document.getElementById('btnModeTest').classList.toggle('active', currentMode === 'test');
       document.getElementById('btnKwHighlight').classList.toggle('active', isKwHighlight);
@@ -1968,7 +2028,7 @@
 
       DOMAIN_CATEGORIES.forEach(domain => {
         // Find matching tags for this domain
-        const matchingTags = Object.keys(tagCountMap).filter(t => 
+        const matchingTags = Object.keys(tagCountMap).filter(t =>
           domain.prefixes.some(p => t.startsWith(p))
         ).sort((a, b) => tagCountMap[b] - tagCountMap[a]);
 
@@ -2012,7 +2072,7 @@
 
     function setFilteredList(tag) {
       currentTag = tag;
-      
+
       // Update Primary Filter Buttons
       document.getElementById('btnFilterAll').classList.toggle('active', tag === 'ALL');
       document.getElementById('btnFilterBookmarks').classList.toggle('active', tag === 'BOOKMARKS');
@@ -2048,7 +2108,7 @@
         else if (tag === 'WRONG') alert("틀린 문항이 없습니다! 완벽합니다. 🎉");
         else if (tag === 'NOTES') alert("메모를 작성한 문항이 없습니다. 📝 버튼으로 메모를 남겨보세요.");
         else alert("해당 조건의 문항이 없습니다.");
-        
+
         filteredQuestions = [...allQuestions];
         currentTag = 'ALL';
         document.getElementById('btnFilterAll').classList.add('active');
@@ -2088,8 +2148,8 @@
       }
 
       const kw = val.toLowerCase();
-      const searchMatches = allQuestions.filter(q => 
-        q.question.toLowerCase().includes(kw) || 
+      const searchMatches = allQuestions.filter(q =>
+        q.question.toLowerCase().includes(kw) ||
         (q.explanation && q.explanation.toLowerCase().includes(kw)) ||
         Object.values(q.choices).some(c => c.toLowerCase().includes(kw))
       );
@@ -2134,7 +2194,7 @@
 
       applyFilter('ALL');
       currentIndex = 0;
-      
+
       saveState();
       renderCurrentQuestion();
       updateDashboardStats();
@@ -2181,10 +2241,10 @@
     function renderCurrentQuestion() {
       if (filteredQuestions.length === 0) return;
       const q = filteredQuestions[currentIndex];
-      
+
       // Question Badge
       document.getElementById('qNumberBadge').textContent = `Q${String(q.number).padStart(3, '0')}`;
-      
+
       // Tags
       const tagsContainer = document.getElementById('qTagsContainer');
       tagsContainer.innerHTML = '';
@@ -2223,18 +2283,18 @@
       const isAnswered = userAnswer !== undefined;
 
       const originalKeys = ['A', 'B', 'C', 'D', 'E'].filter(k => q.choices && q.choices[k]);
-      
+
       // Determine which original choice key goes to which display slot
       let displayOrder = [...originalKeys];
       if (isShuffle) {
         displayOrder = getShuffledChoiceKeys(q.id, originalKeys);
       }
-      
+
       displayOrder.forEach((originalKey, slotIdx) => {
         const slotLetter = originalKeys[slotIdx]; // Fixed A, B, C, D display badge
         const item = document.createElement('div');
         item.className = 'choice-item';
-        
+
         if (userAnswer === originalKey) {
           item.classList.add('selected');
         }
@@ -2248,7 +2308,7 @@
         }
 
         item.onclick = () => selectChoice(originalKey);
-        
+
         let choiceText = q.choices[originalKey];
         if (isKwHighlight) {
           EXAM_KEYWORDS.forEach(kw => {
@@ -2351,10 +2411,10 @@
       const answeredCount = filteredQuestions.filter(q => userAnswers[q.id] !== undefined).length;
       const correctCount = filteredQuestions.filter(q => userAnswers[q.id] === q.answer).length;
       const pct = answeredCount > 0 ? Math.round((correctCount / answeredCount) * 100) : 0;
-      
+
       document.getElementById('progressIndicator').textContent = `${currentIndex + 1} / ${total}`;
       document.getElementById('accuracyIndicator').textContent = `${pct}% (${correctCount}/${answeredCount})`;
-      
+
       const progressPercent = ((currentIndex + 1) / total) * 100;
       document.getElementById('progressBar').style.width = `${progressPercent}%`;
     }
@@ -2447,7 +2507,7 @@
       const total = filteredQuestions.length;
       const correctCount = filteredQuestions.filter(q => userAnswers[q.id] === q.answer).length;
       const wrongCount = total - correctCount;
-      
+
       const scaledScore = Math.round(100 + (correctCount / total) * 900);
       const isPassed = scaledScore >= 720;
 
@@ -2456,7 +2516,7 @@
       const secs = String(elapsedSec % 60).padStart(2, '0');
 
       document.getElementById('scaledScoreText').textContent = scaledScore;
-      
+
       const badge = document.getElementById('passBadgeText');
       badge.className = `pass-badge ${isPassed ? 'pass' : 'fail'}`;
       badge.textContent = isPassed ? `🎉 PASS (합격 / ${scaledScore}점)` : `❌ FAIL (불합격 / ${scaledScore}점)`;
@@ -2483,7 +2543,7 @@
     function setupKeyboardShortcuts() {
       window.addEventListener('keydown', (e) => {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-        
+
         const key = e.key.toUpperCase();
         const q = filteredQuestions[currentIndex];
         if (!q) return;
@@ -2616,8 +2676,9 @@
       { regex: /\bIP\b/gi, replacement: "아이피" },
       { regex: /\bURL\b/gi, replacement: "유알엘" },
       { regex: /\bJSON\b/gi, replacement: "제이슨" },
-      { regex: /\bSQL\b/gi, replacement: "시퀄" },
-      { regex: /\bNoSQL\b/gi, replacement: "노시퀄" }
+      { regex: /\bSQL\b/gi, replacement: "에스큐엘" },
+      { regex: /\bNoSQL\b/gi, replacement: "노에스큐엘" },
+      { regex: /\bQ0*(\d+)\b/gi, replacement: "문제 $001번" }
     ];
 
     function normalizeTextForSpeech(text) {
@@ -2636,7 +2697,7 @@
         if (ttsBar) ttsBar.style.display = 'none';
         return;
       }
-      
+
       const updateVoices = () => {
         ttsVoices = window.speechSynthesis.getVoices();
         populateVoiceList();
@@ -2947,4 +3008,5 @@
     window.onload = init;
   </script>
 </body>
+
 </html>
